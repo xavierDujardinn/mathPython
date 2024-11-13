@@ -9,4 +9,6 @@ xn = base[0]
 yn = base[1]
 suite = base[2]
 
-tests.testFrequence(yn, suite)
+print(tests.testFrequence(yn))
+print("----------------------")
+print(tests.testSauts(yn, 0))
