@@ -1,6 +1,28 @@
 from numpy.distutils.system_info import x11_info
-
 import elemSuite as eS
+import math
+
+def filtre(tab, ri):
+    newTab = []
+    newTab2 = []
+    for i in range(len(tab)-1):
+        if tab[i] >= 5:
+            newTab.append(tab[i])
+            newTab2.append(ri[i])
+        else:
+            if newTab[len(newTab)-1] < 5:
+                newTab[len(newTab)-1] = newTab[len(newTab)-1] + tab[i]
+                newTab2[len(newTab2)-1] = newTab2[len(newTab2)-1] + ri[i]
+            else:
+                newTab.append(tab[i])
+                newTab2.append(ri[i])
+    if newTab[len(newTab)-1] < 5:
+        newTab[len(newTab)-2] = newTab[len(newTab)-2] + newTab[len(newTab)-1]
+        newTab2[len(newTab2)-2] = newTab2[len(newTab2)-2] + newTab2[len(newTab2)-1]
+        newTab2.pop(len(newTab2)-1)
+        newTab.pop(len(newTab)-1)
+    print(newTab, newTab2)
+    return newTab, newTab2
 
 def getKhiSqVal(v):
     khiTable = [
@@ -40,20 +62,23 @@ def getKhiSqVal(v):
 
 def base():
     # On définis simplement la base des test
-    x0 = 19
-    a = 61
-    c = 49
-    m = 120
+    x0 = 7
+    a = 5
+    c = 3
+    m = 16
+
+    n = 1000
 
     suite = [x0]
 
     x = x0
     y = 0
-    while (y != x0):
+    i = 0
+    while (i < n):
         y = eS.elemSuite(x,a,c,m)
-        if (y != x0):
-            suite.append(y)
-            x = y
+        suite.append(y)
+        x = y
+        i += 1
 
     print(f"Suite : {suite} \nTaille : {len(suite)}")
 
@@ -66,13 +91,13 @@ def base():
 
 def last_col (ri, niPi):
     # fonction pour le cacul redondant de la dernière colone
-    return ((ri - niPi)**2) / niPi
+    return pow(ri - niPi, 2) / niPi
 
 def show_tab(xi, ri, pi, nPi, lastCol):
     # fonction pour afficher le tableau
-    print("Xi\tRi\tPi\tN*Pi\t(Ri*NPi)²/(NPi)")
-    for i in range(len(xi)):
-        print(f"{xi[i]}\t{ri[i]}\t{pi[i]}\t{nPi[i]}\t{lastCol[i]}")
+    print("Xi\t|Ri\t|Pi\t|N*Pi\t|(Ri-NPi)²/(NPi)")
+    for i in range(len(lastCol)):
+        print(f"{xi[i]}\t|{ri[i]}\t|{pi[i]}\t|{nPi[i]}\t|{lastCol[i]}")
 
 def testFrequence(yn):
     modalite = [i for i in range(10)]
@@ -88,6 +113,8 @@ def testFrequence(yn):
     return "on ne rejette pas" if khiObservable <= getKhiSqVal(v) else "on rejette"
 
 def testSauts(yn, valeur=0):
+    yn = yn[:100]
+    print(yn)
     modalite = [i for i in range(len(yn) - 1)]
     ri = [0 for _ in range(len(modalite))]
 
@@ -95,47 +122,22 @@ def testSauts(yn, valeur=0):
         if yn[i] == valeur and i <= len(yn) - 1:
             if valeur in yn[i+1:]:
                 ri[yn[i + 1:].index(valeur)] += 1
-
     pi = [pow(0.9,i)*0.1 for i in range(len(modalite))]
     nPi = [len(yn) * Pi for Pi in pi]
-    lastCol = [last_col(ri[i], nPi[i]) for i in range(len(modalite))]
-
-    xi = []
-    riCleaned = []
-    piCleaned = []
-    nPiCleaned = []
-    lastColCleaned = []
-
-    row = 0
-    for i in range(len(modalite)-2):
-        if ri[i] != 0:
-            if row == 0:
-                xi.append(modalite[i])
-                riCleaned.append(ri[i])
-                piCleaned.append(pi[i])
-                nPiCleaned.append(nPi[i])
-                lastColCleaned.append(lastCol[i])
-                row += 1
-            elif nPiCleaned[row-1] < 5:
-                xi[row-1] = f"[{xi[row-1]},{modalite[i]}]"
-                riCleaned[row-1] += ri[i]
-                piCleaned[row-1] += pi[i]
-                nPiCleaned[row-1] += nPi[i]
-                lastColCleaned[row-1] += lastCol[i]
-            else:
-                xi.append(modalite[i])
-                riCleaned.append(ri[i])
-                piCleaned.append(pi[i])
-                nPiCleaned.append(nPi[i])
-                lastColCleaned.append(lastCol[i])
-                row += 1
 
 
 
+    newNpi, newRi = filtre(nPi, ri)
 
-    show_tab(xi, riCleaned, piCleaned, nPiCleaned, lastColCleaned)
-    khiObservable = sum(lastColCleaned)
-    v = len(xi) - 1
+    newMod = [0 for i in range(len(newNpi))]
+    newPi = [0 for i in range(len(newNpi))]
+
+    lastCol = [last_col(newRi[i], newNpi[i]) for i in range(len(newNpi)-1)]
+    print(len(newNpi) , len(newRi))
+
+    show_tab(newMod, newRi, newPi, newNpi, lastCol)
+    khiObservable = sum(lastCol)
+    v = len(newNpi) - 1
     print(f"Khi observable : {khiObservable} , degré de liberté : {v}")
     print(f"{khiObservable} <= ? {getKhiSqVal(v)}]")
     return "on ne rejette pas" if khiObservable <= getKhiSqVal(v) else "on rejette"
