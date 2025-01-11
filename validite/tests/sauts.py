@@ -47,6 +47,7 @@ def testSauts(yn, valeur = 0):
 
                     modalite.pop(i)
 
+        # les x1 seront incohérents sur les classes regroupées mais trkl y a pire dans la vie
         show_tab(modalite, ri, pi, nPi, lastCol)
 
         # Calcul final
