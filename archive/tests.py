@@ -1,6 +1,5 @@
-from numpy.distutils.system_info import x11_info
-import elemSuite as eS
-import math
+from utils import elemSuite as eS
+
 
 def filtre(tab, ri):
     newTab = []

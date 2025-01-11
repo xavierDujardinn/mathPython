@@ -1,5 +1,4 @@
-import random as rm
-import elemSuite as suite
+from utils import elemSuite as suite
 import math
 
 def img(x):
