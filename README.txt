@@ -1,4 +1,4 @@
-Solutions aux fichiers mentionnés dans le document de précisions au sujets de l'examen d'Aide à la déscision managériale
+Solutions aux fichiers mentionnés dans le document de précisions au sujets de l'examen d'Aide à la décision managériale
 
 -  Exercice similaire au calcul d’intégrale du chapitre 5 module 1 ==> MonteCarlo
 
